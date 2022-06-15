@@ -1,0 +1,16 @@
+@import "./fonts";
+
+body {
+	background-color: aquamarine;
+	background: url("@img/avatar-2.jpg") 0 0 no-repeat;
+	font-family: Nunito;
+	@media (max-width: 768px) {
+		background-color: darksalmon;
+	}
+	h1 {
+		color: blueviolet;
+		@media (max-width: 768px) {
+			color: red;
+		}
+	}
+}
