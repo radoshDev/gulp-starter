@@ -33,32 +33,37 @@ export const ttfToWoff = () => {
 }
 
 export const fontsStyle = async () => {
-	const styleFontsFile = `${path.srcFolder}/scss/fonts.scss`
-	let styleFontsFileContent = ""
-	const fontsFiles = await fs.promises.readdir(path.build.fonts)
+	try {
+		const styleFontsFile = `${path.srcFolder}/scss/fonts.scss`
+		let styleFontsFileContent = ""
+		const fontsFiles = await fs.promises.readdir(path.build.fonts)
 
-	if (!fontsFiles || fontsFiles.length === 0) {
-		console.log("Fonts files not exist")
-		return
+		if (!fontsFiles || fontsFiles.length === 0) {
+			console.log("Fonts files not exist")
+			return
+		}
+
+		if (fs.existsSync(styleFontsFile)) {
+			console.log(
+				`File scss/fonts.scss already exist. If you wanna update, delete first`
+			)
+			return
+		}
+
+		let newFileOnly
+		for (let fontFile of fontsFiles) {
+			let fontFileName = fontFile.substring(0, fontFile.lastIndexOf("."))
+			if (fontFileName === newFileOnly) continue
+
+			let [fontName, fontWeightName] = fontFileName.split("-")
+			const fontWeight =
+				FONT_WEIGHT[fontWeightName.toLocaleLowerCase()] || FONT_WEIGHT.regular
+			styleFontsFileContent += `@font-face {\n\tfont-family: ${fontName};\n\tfont-display: swap;\n\tsrc: url("../fonts/${fontFileName}.woff2") format("woff2"), url("../fonts/${fontFileName}.woff") format("woff");\n\tfont-weight: ${fontWeight};\n\tfont-style: normal;\n\t}\r\n`
+			newFileOnly = fontFileName
+			}
+			await fs.promises.writeFile(styleFontsFile, styleFontsFileContent)
+		} catch (error) {
+			console.log(error)
+			return
 	}
-
-	if (fs.existsSync(styleFontsFile)) {
-		console.log(
-			`File scss/fonts.scss already exist. If you wanna update, delete first`
-		)
-		return
-	}
-
-	let newFileOnly
-	for (let fontFile of fontsFiles) {
-		let fontFileName = fontFile.substring(0, fontFile.lastIndexOf("."))
-		if (fontFileName === newFileOnly) continue
-
-		let [fontName, fontWeightName] = fontFileName.split("-")
-		const fontWeight =
-			FONT_WEIGHT[fontWeightName.toLocaleLowerCase()] || FONT_WEIGHT.regular
-		styleFontsFileContent += `@font-face {\n\tfont-family: ${fontName};\n\tfont-display: swap;\n\tsrc: url("../fonts/${fontFileName}.woff2") format("woff2"), url("../fonts/${fontFileName}.woff") format("woff");\n\tfont-weight: ${fontWeight};\n\tfont-style: normal;\n\t}\r\n`
-		newFileOnly = fontFileName
-	}
-	await fs.promises.writeFile(styleFontsFile, styleFontsFileContent)
 }
