@@ -11,13 +11,13 @@ const sass = gulpSass(dartSass)
 export const scss = () => {
 	return gulp
 		.src(path.src.scss, { sourcemaps: isDev })
-		.pipe(plugins.replace("@img/", `../${path.imgFolder}/`))
 		.pipe(
 			sass({ outputStyle: "expanded", sourceMap: true }).on(
 				"error",
 				sass.logError
 			)
 		)
+		.pipe(plugins.replace("@img/", `../${path.imgFolder}/`))
 		.pipe(plugins.if(isBuild, groupeCssMediaQueries()))
 		.pipe(
 			plugins.if(
